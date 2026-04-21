@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Quotes App</title>
+
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      color: white;
+      background-size: cover;
+      background-position: center;
+      transition: background 0.5s ease-in-out;
+    }
+
+    .container {
+      width: 90%;
+      max-width: 500px;
+      background: rgba(0,0,0,0.6);
+      padding: 30px;
+      border-radius: 20px;
+      text-align: center;
+      backdrop-filter: blur(12px);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+      animation: fadeIn 0.8s ease;
+    }
+
+    h1 {
+      margin-bottom: 20px;
+    }
+
+    .quote {
+      font-size: 22px;
+      margin: 20px 0;
+      line-height: 1.4;
+    }
+
+    .author {
+      font-size: 16px;
+      opacity: 0.8;
+      margin-bottom: 20px;
+    }
+
+    select {
+      width: 100%;
+      padding: 10px;
+      border-radius: 8px;
+      border: none;
+      margin-bottom: 20px;
+      font-size: 16px;
+    }
+
+    button {
+      width: 100%;
+      padding: 12px;
+      font-size: 16px;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      margin-top: 10px;
+      transition: 0.3s;
+    }
+
+    button:hover {
+      transform: scale(1.05);
+    }
+
+    .btn {
+      background: linear-gradient(135deg, #3498db, #9b59b6);
+      color: white;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="container">
+  <h1>💬 Quotes App</h1>
+
+  <p class="quote" id="quote">Choisis un thème pour commencer</p>
+  <p class="author" id="author"></p>
+
+  <select id="themeSelect">
+    <option value="amour">❤️ Amour</option>
+    <option value="succes">💪 Succès</option>
+    <option value="temps">⏳ Temps</option>
+    <option value="fashion">👗 Fashion</option>
+  </select>
+
+  <button class="btn" onclick="getQuote()">🎯 Afficher la citation</button>
+</div>
+
+<script>
+  // Background par thème
+  const themeBackgrounds = {
+    amour: "https://images.unsplash.com/photo-1518199266791-5375a83190b7",
+    succes: "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee",
+    temps: "https://images.unsplash.com/photo-1496307042754-b4aa456c4a2d",
+    fashion: "https://images.unsplash.com/photo-1490481651871-ab68de25d43d"
+  };
+
+  // fallback (si jamais problème)
+  const defaultBackground = "https://images.unsplash.com/photo-1496307042754-b4aa456c4a2d";
+
+  async function getQuote() {
+    const theme = document.getElementById("themeSelect").value;
+
+    const res = await fetch(`/quote/theme/${theme}`);
+    const data = await res.json();
+
+    if (data.error) {
+      document.getElementById('quote').innerText = data.error;
+      document.getElementById('author').innerText = "";
+      return;
+    }
+
+    document.getElementById('quote').innerText = "💬 " + data.text;
+    document.getElementById('author').innerText = "— " + data.author;
+
+    changeBackground(theme);
+  }
+
+  function changeBackground(theme) {
+    const bg = themeBackgrounds[theme] || defaultBackground;
+    document.body.style.backgroundImage = `url(${bg})`;
+  }
+
+  // initial background
+  changeBackground("succes");
+</script>
+
+</body>
+</html>
